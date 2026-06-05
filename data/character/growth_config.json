@@ -1,0 +1,21 @@
+{
+  "积压池规则": {
+    "L3_weight_threshold": 30,
+    "L3_count_threshold": 15
+  },
+
+  "事件重量标准": {
+    "日常互动": 1.0,
+    "情感表达": 3.0,
+    "冲突或争吵": 4.0,
+    "明确的偏好反馈": 2.0,
+    "重大生活事件": 5.0
+  },
+
+  "衰减规则": {
+    "decay_lambda": 0.04,
+    "decay_threshold": 0.15
+  },
+
+  "_说明": "积压池机制：对话事件被LLM分析后写入积压池，同方向的事件累积。当累积权重≥L3_weight_threshold 或次数≥L3_count_threshold 时，自动触发表现层(character_profile_surface.json)更新。"
+}

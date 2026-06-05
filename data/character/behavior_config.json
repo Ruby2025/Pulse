@@ -1,0 +1,84 @@
+{
+  "memory": {
+    "max_history_turns": 15,
+    "compress_every": 5,
+    "decay_lambda": 0.04,
+    "decay_threshold": 0.25,
+    "search_top_k": 8,
+    "search_weights": {
+      "topic": 4.0,
+      "emotion": 2.0,
+      "time": 1.5,
+      "importance": 1.0
+    },
+    "highlight_weight_threshold": 0.85,
+    "merge_similarity_threshold": 0.5
+  },
+
+  "reply": {
+    "sentence_count_weights": {
+      "1": 30,
+      "2": 35,
+      "3": 25,
+      "4": 10
+    },
+    "max_tokens": 300,
+    "temperature": 0.75
+  },
+
+  "proactive": {
+    "normal_cooldown_minutes": 30,
+    "normal_daily_max": 4,
+    "attention_cooldown_minutes": 20,
+    "attention_daily_max": 8,
+    "longing_count_per_day": 1,
+    "longing_active_hours": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1]
+  },
+
+  "delay": {
+    "busy_probability": 0.15,
+    "busy_min_minutes": 5,
+    "busy_max_minutes": 15,
+    "sleeping_probability": 0.85,
+    "sleeping_min_minutes": 30,
+    "sleeping_max_minutes": 90,
+    "default_probability": 0.08,
+    "default_min_minutes": 3,
+    "default_max_minutes": 10,
+    "flow_mode_probability": 0.05,
+    "flow_mode_threshold_messages": 3,
+    "flow_mode_window_minutes": 5,
+    "attention_mode_probability": 0.08
+  },
+
+  "world_expand": {
+    "trigger_probability": 0.30,
+    "max_pending": 10
+  },
+
+  "social_network": {
+    "life_trigger_probability": 0.25,
+    "max_behaviors_per_node": 10
+  },
+
+  "learning": {
+    "daydream_min_minutes": 5,
+    "daydream_max_minutes": 10,
+    "share_probability": 0.50,
+    "share_cooldown_minutes": 20
+  },
+
+  "relation_decay": {
+    "no_contact_hours_threshold": 48
+  },
+
+  "low_mood": {
+    "base_probability": 0.02,
+    "recovery_threshold": 0.55
+  },
+
+  "proactive_explore_turns": {
+    "min": 2,
+    "max": 3
+  }
+}
