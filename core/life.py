@@ -742,6 +742,7 @@ class LifeManager:
             attention_mode      = attention_mode,
             recent_activities   = recent_text,
             ruby_status         = user_status,
+            character_identity  = self.config.get("character", {}).get("core_personality", ""),
             user_status         = user_status,
             character_name      = self.char_name,
             user_name           = self.user_name,
