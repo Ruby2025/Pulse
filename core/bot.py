@@ -181,6 +181,7 @@ class AIChanBot:
     def _extract_world_details_from_convo(self, bot_response: str):
         prompt = self._prompts.get("detect_world_detail", "").format(
             content=bot_response,
+            world_constraints=self._prompts.get("world_constraints", ""),
             character_name=self.char_name,
             user_name=self.user_name,
         )
