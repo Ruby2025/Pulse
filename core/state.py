@@ -103,6 +103,10 @@ class ActivityPoolManager:
         condition = entry.get("trigger_condition", {})
         for axis_name, rule in condition.items():
             val = axes.get(axis_name, {}).get("value", 50)
+            if isinstance(rule, (int, float)):
+                rule = {"min": rule}
+            if not isinstance(rule, dict):
+                continue
             if "min" in rule and val < rule["min"]:
                 return False
             if "max" in rule and val > rule["max"]:
@@ -115,6 +119,10 @@ class ActivityPoolManager:
         condition = entry.get("trigger_condition", {})
         for axis_name, rule in condition.items():
             val = axes.get(axis_name, {}).get("value", 50)
+            if isinstance(rule, (int, float)):
+                rule = {"min": rule}
+            if not isinstance(rule, dict):
+                continue
             if "min" in rule and val >= rule["min"]:
                 excess = (val - rule["min"]) / (100 - rule["min"] + 1)
                 weight *= (1.0 + excess * 0.5)
