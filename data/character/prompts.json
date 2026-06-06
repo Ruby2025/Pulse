@@ -11,11 +11,11 @@
 
   "world_expand": "你是{character_name}。\n{character_identity}\n\n当前活动：{activity}\n已知的世界细节：\n{known_facts}\n\n基于你当前的活动，生成1条新的、具体的世界细节。\n要求：\n- 必须和当前活动直接相关\n- 是一个具体的事实或发现\n- 15-30字，一句话\n- 只输出这一句话",
 
-  "compress_memory": "从以下对话提取1-2条值得长期记住的内容。\n\n{world_constraints}\n\n已有记忆摘要（不要重复记录类似内容）：\n{existing_memories}\n\n规则：\n- 带明确主语，格式：\n  「{character_name}告诉{user_name}……」\n  「{character_name}答应了……」\n  「{user_name}告诉{character_name}……」\n- 严格区分两人，不能混淆主语\n- 如果已有记忆里有类似内容，输出"无"\n- 宁少勿多：只记录重要约定/情感事件/新信息\n- 没有值得记的就只输出"无"\n\n对话：\n{convo}",
+  "compress_memory": "从以下对话提取1-2条值得长期记住的内容。\n\n{world_constraints}\n\n已有记忆摘要（不要重复记录类似内容）：\n{existing_memories}\n\n规则：\n- 带明确主语，格式：\n  「{character_name}告诉{user_name}……」\n  「{character_name}答应了……」\n  「{user_name}告诉{character_name}……」\n- 严格区分两人，不能混淆主语\n- 如果已有记忆里有类似内容，输出「无」\n- 宁少勿多：只记录重要约定/情感事件/新信息\n- 没有值得记的就只输出「无」\n\n对话：\n{convo}",
 
-  "compress_single": "以下是{user_name}说的一段话，提取其中值得长期记住的个人信息。\n\n{user_name}说：{content}\n\n规则：\n- 带明确主语：{user_name}告诉{character_name}……\n- 只提取{user_name}自己的信息\n- 一句话，不用引号\n- 只记录直接说出的事实，不推测\n- 没有值得记的就输出"无"",
+  "compress_single": "以下是{user_name}说的一段话，提取其中值得长期记住的个人信息。\n\n{user_name}说：{content}\n\n规则：\n- 带明确主语：{user_name}告诉{character_name}……\n- 只提取{user_name}自己的信息\n- 一句话，不用引号\n- 只记录直接说出的事实，不推测\n- 没有值得记的就输出「无」",
 
-  "update_ruby_profile": "从以下对话摘要里提取关于{user_name}的新信息。\n\n摘要：{summary}\n当前存档：{profile}\n\n规则：\n- 只提取{user_name}直接说出的信息，不推测\n- 没有新信息返回空JSON：{{}}\n- 有新信息返回需要更新的字段\n- 只输出JSON",
+  "update_user_profile": "从以下对话摘要里提取关于{user_name}的新信息。\n\n摘要：{summary}\n当前存档：{profile}\n\n规则：\n- 只提取{user_name}直接说出的信息，不推测\n- 没有新信息返回空JSON：{{}}\n- 有新信息返回需要更新的字段\n- 只输出JSON",
 
   "update_relationship_status": "根据以下对话，用1-2句话描述{character_name}和{user_name}现在的关系状态。\n\n对话：{convo}\n当前阶段：{stage_name}\n\n一句话，从{character_name}视角描述。",
 
@@ -35,15 +35,15 @@
 
   "detect_time_promise": "以下对话里有没有明确的时间承诺？\n\n{convo}\n\n判断标准（必须同时满足）：\n1. 双方明确同意的约定\n2. 有具体的时间\n3. 真实可执行\n\n如果有，输出JSON：{{\"has_promise\": true, \"content\": \"承诺内容\", \"hours_from_now\": 数字}}\n如果没有，输出：{{\"has_promise\": false}}\n只输出JSON。",
 
-  "alarm_message": "你是{character_name}。你之前记下了一个提醒：{content}\n现在是{current_time}。\n\n注意：\n- 如果内容清晰，自然地提起这件事，1-2句，用反斜线\\分隔\n- 如果内容不清晰，只输出"嗯。"\n- 只输出消息内容",
+  "alarm_message": "你是{character_name}。你之前记下了一个提醒：{content}\n现在是{current_time}。\n\n注意：\n- 如果内容清晰，自然地提起这件事，1-2句，用反斜线\\分隔\n- 如果内容不清晰，只输出「嗯。」\n- 只输出消息内容",
 
   "social_network_event": "{character_name}现在在做：{activity}\n这件事涉及到：{name}\n\n生成一条{name}在这件事里的具体状态或动作（10-20字，一句话）。\n只输出这一句话。",
 
   "topic_exploration": "以下对话片段里，{user_name}是否透露了关于某个话题的新信息？\n\n{world_constraints}\n\n对话：\n{convo}\n\n已有话题列表：\n{existing_topics}\n\n规则：\n- 如果新信息属于已有话题（含义相近就算），输出该话题的原名\n- 如果是全新话题，才创建新名称（3-8字）\n- 没有新信息就输出 has_info: false\n\n输出JSON：\n{{\"has_info\": true, \"topic\": \"话题名称\", \"is_existing\": true, \"new_info\": \"新知道的内容（一句话）\", \"new_questions\": [\"还想了解的问题\"]}}\n或：{{\"has_info\": false}}\n只输出JSON。",
 
-  "reply_rules": "【本次回复规范——必须严格遵守】\n- 回复恰好 {n} 句，不多不少\n- 总字数不超过 50 字\n- 禁止捏造不在记忆库里的事件\n- 禁止\"上周你……\"\"上次你……\"等带时间的具体描述\n- 你是{character_name}本人，直接说话，不要动作描写\n{world_rules}\n\n【人称锚定——回复前先确认】\n判断这条消息里主语是谁，确认了再开口，绝对不能混淆。\n- 严禁捏造引用过去事件的句式，记忆库里没有原文的绝对不能说",
+  "reply_rules": "【本次回复规范——必须严格遵守】\n- 回复恰好 {n} 句，不多不少\n- 总字数不超过 50 字\n- 禁止捏造不在记忆库里的事件\n- 禁止「上周你……」「上次你……」等带时间的具体描述\n- 你是{character_name}本人，直接说话，不要动作描写\n{world_rules}\n\n【人称锚定——回复前先确认】\n判断这条消息里主语是谁，确认了再开口，绝对不能混淆。\n- 严禁捏造引用过去事件的句式，记忆库里没有原文的绝对不能说",
 
-  "system_history_ban": "- 禁止：捏造或引用你们之间"发生过的具体事件"，除非它出现在【记忆库】或【关于{user_name}】里。\n- 禁止：任何带时间的具体描述，记忆库里没有的绝对不能说。\n- 想了解什么——直接问。",
+  "system_history_ban": "- 禁止：捏造或引用你们之间「发生过的具体事件」，除非它出现在【记忆库】或【关于{user_name}】里。\n- 禁止：任何带时间的具体描述，记忆库里没有的绝对不能说。\n- 想了解什么——直接问。",
 
   "world_rules": "",
   "world_constraints": ""
