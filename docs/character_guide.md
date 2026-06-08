@@ -1,6 +1,6 @@
 # 创建你的角色
 
-Pulse 的默认角色是 Aria（一个自由插画师），但你大概率想换成自己的角色。这篇指南教你怎么做。
+Pulse 默认提供了一套通用活动模板，任何角色都能直接跑。但要让角色真正像「你的人」，你需要定义它是谁。
 
 ---
 
@@ -26,7 +26,7 @@ Pulse 的默认角色是 Aria（一个自由插画师），但你大概率想换
 
 ---
 
-```
+````
 我在部署一个叫 Pulse 的 AI 伴侣框架（GitHub开源项目）。我需要你帮我生成角色配置文件。
 
 我的角色描述：
@@ -85,10 +85,15 @@ llm:
     provider: "deepseek"
     model: "deepseek-chat"
     api_key: "env:LLM_API_KEY"
+    supports_vision: false
   background_model:
     provider: "deepseek"
     model: "deepseek-chat"
     api_key: "env:LLM_API_KEY"
+  vision_model:
+    provider: "gemini"
+    model: "gemini-3.1-flash-lite"
+    api_key: "env:GOOGLE_API_KEY"
 
 connector:
   type: "none"
@@ -237,7 +242,7 @@ memory:
 ```
 
 请直接输出这 4 个文件的完整内容，每个文件用文件名作为标题分隔。不要省略，不要写"同上"，每个值都写出来。
-```
+````
 
 ---
 
@@ -274,18 +279,18 @@ python main.py
 
 **`config/character.yaml`** — 角色的灵魂
 
-打开文件，把 Aria 的内容全部替换成你自己的。重点关注：
+打开文件，把模板内容替换成你自己的。重点关注：
 
 - `core_personality`：这是最重要的字段。写得越具体，角色越像真人。建议至少 200 字。
 - `speaking_style`：决定回复的长度和风格。如果角色话少，写"回复1-2句"；话多可以写"回复2-4句"。
 - `schedule`：决定角色什么时候睡觉什么时候活跃。夜猫子就写 `wake_up: "14:00"` `sleep: "04:00"`。
 - `interests`：直接影响角色会自己研究什么、主动聊什么。
 
-### 建议改的（2 个文件）
+### 建议改的（1 个文件）
 
 **`data/character/activity_pools.json`** — 角色在做什么
 
-这是让角色"活着"的关键。默认是 Aria 的活动（画画、逛书店、做咖啡）。你需要换成你角色的日常。
+这是让角色"活着"的关键。默认是通用活动（工作、刷手机、出门走走、发呆），任何角色都能用。但如果你想让角色更生动，建议自定义。
 
 每个时段至少 3 个活动。写活动的诀窍：
 
@@ -294,15 +299,24 @@ python main.py
 - 混合高能量和低能量的活动
 - mid_active 里一定要有一个"发呆"（触发自主学习的入口）
 
-**`data/character/keywords.json`** — 关键词库
+### 可以不改的（4 个文件）
 
-重点改 `self_interest_topics`（角色发呆时自己会去研究的话题）和 `relation_events`（正面/负面互动的信号词）。
-
-### 可以不改的（3 个文件）
-
-- `character_config.json`：默认值适用于大多数角色。只有角色性格非常极端时才需要调（比如把心情标签从"愉快"改成"亢奋"）
+- `keywords.json`：默认关键词已经够用，角色会通过自主学习自动扩展兴趣话题
+- `character_config.json`：默认值适用于大多数角色。只有角色性格非常极端时才需要调
 - `behavior_config.json`：行为参数，默认值已经调过。除非你觉得主动消息太多/太少
 - `prompts.json`：提示词模板，里面用的是 `{character_name}` 占位符，一般不用改
+
+---
+
+## 从其他平台迁移
+
+如果你已经有在其他 AI 聊天平台的对话历史，Pulse 提供了记忆迁移工具：
+
+```bash
+python tools/import_memory.py -i 你的导出文件 -f 格式 --dry-run
+```
+
+支持 ChatGPT、Character.AI、纯文本、CSV 四种格式。详见 [README](../README.md#从其他平台迁移)。
 
 ---
 
