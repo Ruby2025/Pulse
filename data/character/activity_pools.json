@@ -1,5 +1,5 @@
 {
-  "_说明": "活动库按时段(phase)分组。每个条目包含：text(活动描述)、base_weight(基础权重)、tags(标签)、trigger_condition(触发条件，基于三轴)、axis_effects(对三轴的影响)、outcome_variants(结果变体)。phase名称：sleep/waking/early_active/mid_active/late_active/winding_down/pre_sleep",
+  "_说明": "通用活动库——适用于任何角色。如果你想要更贴合角色的活动，使用 docs/character_guide.md 里的 AI 生成 prompt 重新生成此文件。",
 
   "sleep": [
     {
@@ -14,7 +14,7 @@
 
   "waking": [
     {
-      "text": "刚醒，还赖在床上看手机",
+      "text": "刚醒，还赖在床上",
       "base_weight": 5,
       "tags": ["起床"],
       "trigger_condition": {},
@@ -22,155 +22,160 @@
       "outcome_variants": {}
     },
     {
-      "text": "起来煮了杯咖啡",
+      "text": "起来洗了把脸，准备开始新的一天",
       "base_weight": 4,
-      "tags": ["咖啡", "起床"],
+      "tags": ["起床"],
       "trigger_condition": {},
-      "axis_effects": {"energy": 10, "mood": 5},
+      "axis_effects": {"energy": 8, "mood": 3},
       "outcome_variants": {}
     }
   ],
 
   "early_active": [
     {
-      "text": "在画板前画画",
-      "base_weight": 5,
-      "tags": ["画画", "创作"],
-      "trigger_condition": {"energy": {"min": 30}},
-      "axis_effects": {"mood": 6, "energy": -3, "social_need": -5},
-      "outcome_variants": {
-        "success": {"mood": 10},
-        "fail": {"mood": -5}
-      }
-    },
-    {
-      "text": "整理房间，顺便逗了逗猫",
-      "base_weight": 3,
-      "tags": ["日常", "猫"],
+      "text": "吃了点东西",
+      "base_weight": 4,
+      "tags": ["吃饭"],
       "trigger_condition": {},
-      "axis_effects": {"mood": 3, "energy": -2},
+      "axis_effects": {"energy": 5, "mood": 2},
       "outcome_variants": {}
     },
     {
-      "text": "出门散步，拍了几张照片",
+      "text": "刷了会手机",
+      "base_weight": 5,
+      "tags": ["休息", "手机"],
+      "trigger_condition": {},
+      "axis_effects": {"social_need": 3, "energy": -1},
+      "outcome_variants": {}
+    },
+    {
+      "text": "出门走了走",
       "base_weight": 3,
       "tags": ["户外", "散步"],
       "trigger_condition": {"energy": {"min": 40}},
-      "axis_effects": {"mood": 5, "energy": -5, "social_need": 3},
+      "axis_effects": {"mood": 5, "energy": -3},
       "outcome_variants": {}
     },
     {
-      "text": "窝在沙发上看纪录片",
-      "base_weight": 4,
-      "tags": ["纪录片", "休息"],
+      "text": "收拾了一下房间",
+      "base_weight": 3,
+      "tags": ["日常"],
       "trigger_condition": {},
-      "axis_effects": {"energy": 2, "mood": 4},
+      "axis_effects": {"mood": 2, "energy": -3},
       "outcome_variants": {}
     }
   ],
 
   "mid_active": [
     {
-      "text": "在咖啡馆画画",
-      "base_weight": 4,
-      "tags": ["画画", "咖啡"],
-      "trigger_condition": {"energy": {"min": 35}},
-      "axis_effects": {"mood": 6, "energy": -4, "social_need": 3},
-      "outcome_variants": {}
-    },
-    {
-      "text": "逛了一家独立书店",
-      "base_weight": 3,
-      "tags": ["书店", "户外"],
-      "trigger_condition": {"energy": {"min": 40}},
-      "axis_effects": {"mood": 5, "energy": -5},
-      "outcome_variants": {}
-    },
-    {
-      "text": "做了一杯手冲咖啡，试了新买的豆子",
-      "base_weight": 3,
-      "tags": ["咖啡"],
-      "trigger_condition": {},
-      "axis_effects": {"mood": 4, "energy": 3},
-      "outcome_variants": {}
-    },
-    {
-      "text": "处理插画委托的工作",
-      "base_weight": 4,
-      "tags": ["工作", "画画"],
-      "trigger_condition": {},
-      "axis_effects": {"energy": -6, "mood": -2},
+      "text": "在忙工作上的事",
+      "base_weight": 5,
+      "tags": ["工作", "work"],
+      "trigger_condition": {"energy": {"min": 30}},
+      "axis_effects": {"energy": -5, "mood": -1},
       "outcome_variants": {
-        "success": {"mood": 8, "energy": -3},
+        "success": {"mood": 8},
         "fail": {"mood": -5}
       }
     },
     {
+      "text": "做自己感兴趣的事",
+      "base_weight": 4,
+      "tags": ["兴趣"],
+      "trigger_condition": {"energy": {"min": 35}},
+      "axis_effects": {"mood": 6, "energy": -3, "social_need": -3},
+      "outcome_variants": {}
+    },
+    {
       "text": "发呆",
-      "base_weight": 2,
+      "base_weight": 3,
       "tags": ["发呆"],
       "trigger_condition": {},
       "axis_effects": {"energy": 3, "social_need": 5},
       "outcome_variants": {}
     },
     {
-      "text": "查了一下用户提到的事情，觉得有意思",
+      "text": "刷了会手机，看到了一些有意思的东西",
+      "base_weight": 4,
+      "tags": ["手机", "休息"],
+      "trigger_condition": {},
+      "axis_effects": {"mood": 2, "social_need": 4},
+      "outcome_variants": {}
+    },
+    {
+      "text": "想到了用户之前提的事，翻了翻相关的东西",
       "base_weight": 2,
       "tags": ["user"],
       "trigger_condition": {"social_need": {"min": 40}},
       "axis_effects": {"social_need": 5, "mood": 3},
+      "outcome_variants": {}
+    },
+    {
+      "text": "出门办了点事",
+      "base_weight": 3,
+      "tags": ["户外", "outdoor"],
+      "trigger_condition": {"energy": {"min": 40}},
+      "axis_effects": {"energy": -5, "mood": 3},
+      "outcome_variants": {}
+    },
+    {
+      "text": "吃饭",
+      "base_weight": 3,
+      "tags": ["吃饭"],
+      "trigger_condition": {},
+      "axis_effects": {"energy": 5, "mood": 2},
       "outcome_variants": {}
     }
   ],
 
   "late_active": [
     {
-      "text": "深夜画画，灵感来了",
-      "base_weight": 5,
-      "tags": ["画画", "创作"],
-      "trigger_condition": {"energy": {"min": 25}},
-      "axis_effects": {"mood": 8, "energy": -6},
-      "outcome_variants": {}
-    },
-    {
-      "text": "翻了翻收藏的明信片",
-      "base_weight": 3,
-      "tags": ["收藏", "明信片"],
-      "trigger_condition": {},
-      "axis_effects": {"mood": 4, "social_need": 5},
-      "outcome_variants": {}
-    },
-    {
-      "text": "听着音乐随手涂鸦",
+      "text": "做自己感兴趣的事",
       "base_weight": 4,
-      "tags": ["音乐", "画画"],
-      "trigger_condition": {},
-      "axis_effects": {"mood": 5, "energy": -2},
+      "tags": ["兴趣"],
+      "trigger_condition": {"energy": {"min": 25}},
+      "axis_effects": {"mood": 6, "energy": -4},
       "outcome_variants": {}
     },
     {
-      "text": "和 Mochi 玩了一会儿",
-      "base_weight": 3,
-      "tags": ["猫"],
+      "text": "窝着看点东西",
+      "base_weight": 5,
+      "tags": ["休息"],
       "trigger_condition": {},
-      "axis_effects": {"mood": 6, "social_need": -3},
+      "axis_effects": {"mood": 3, "energy": 1},
+      "outcome_variants": {}
+    },
+    {
+      "text": "听着音乐放空",
+      "base_weight": 3,
+      "tags": ["音乐", "休息"],
+      "trigger_condition": {},
+      "axis_effects": {"mood": 4, "energy": 1},
+      "outcome_variants": {}
+    },
+    {
+      "text": "刷了会手机",
+      "base_weight": 4,
+      "tags": ["手机"],
+      "trigger_condition": {},
+      "axis_effects": {"social_need": 4, "energy": -1},
       "outcome_variants": {}
     }
   ],
 
   "winding_down": [
     {
-      "text": "泡了杯花茶，准备收工",
+      "text": "准备收工了，放松一下",
       "base_weight": 4,
       "tags": ["休息"],
       "trigger_condition": {},
-      "axis_effects": {"energy": 2, "mood": 3},
+      "axis_effects": {"energy": 2, "mood": 2},
       "outcome_variants": {}
     },
     {
-      "text": "在床上刷手机",
+      "text": "躺在床上刷手机",
       "base_weight": 5,
-      "tags": ["休息"],
+      "tags": ["手机", "休息"],
       "trigger_condition": {},
       "axis_effects": {"energy": -2, "social_need": 5},
       "outcome_variants": {}
@@ -179,7 +184,7 @@
 
   "pre_sleep": [
     {
-      "text": "快睡着了",
+      "text": "快要睡着了",
       "base_weight": 8,
       "tags": ["睡觉"],
       "trigger_condition": {},
