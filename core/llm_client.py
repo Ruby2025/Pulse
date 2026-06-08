@@ -1,9 +1,7 @@
 """
-core/llm_client.py
+core/llm_client.py ── Pulse 开源版
 LLM 统一调用层 - 支持 DeepSeek / OpenAI / Claude / Gemini
-新增：
-  - Gemini 视觉调用（describe_image）
-  - DeepSeek thinking 模式默认关闭
+视觉支持：chat_model 自带视觉时直接看图，否则用独立 vision_model 描述
 """
 
 import os
@@ -103,7 +101,7 @@ class LLMClient:
             "messages":    full_messages,
             "max_tokens":  max_tokens,
             "temperature": temperature,
-            "thinking":    {"type": "disabled"},  # 关闭 thinking 模式
+            "thinking":    {"type": "disabled"},
         }
 
         resp = requests.post(
@@ -163,51 +161,91 @@ class LLMClient:
         resp.raise_for_status()
         return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
 
-    # ── Gemini 视觉：描述图片 ────────────────────────────────────────────
+    # ── 图片描述（通用，支持任何有视觉能力的模型）─────────────────────────
     def describe_image(self, image_base64: str, caption: str = "") -> str:
         """
-        用 Gemini 1.5 Flash 描述图片内容
-        返回一段中文描述，供后续传给 DeepSeek
+        用当前 LLM 实例描述图片。
+        支持 Gemini（原生视觉）和 OpenAI 兼容格式（GPT-4o 等）。
         """
-        google_api_key = os.environ.get("GOOGLE_API_KEY", "")
-        if not google_api_key:
-            print("[图片] GOOGLE_API_KEY 未设置")
-            return "（图片无法读取）"
-
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={google_api_key}"
-
         caption_hint = f"用户发送这张图片时说：「{caption}」\n\n" if caption and caption != "（发了一张图）" else ""
-
         prompt_text = f"""{caption_hint}请用中文简洁描述这张图片的内容（3-5句话）。
 描述要客观具体，包括：主要内容、颜色、氛围、细节。
 不要评价好坏，只描述看到的内容。"""
 
-        payload = {
-            "contents": [{
-                "parts": [
-                    {
-                        "inline_data": {
-                            "mime_type": "image/jpeg",
-                            "data":      image_base64
-                        }
-                    },
-                    {
-                        "text": prompt_text
-                    }
-                ]
-            }],
-            "generationConfig": {
-                "maxOutputTokens": 200,
-                "temperature":     0.2,
-            }
-        }
-
         try:
-            resp = requests.post(url, json=payload, timeout=30)
-            resp.raise_for_status()
-            description = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-            print(f"[图片描述] {description[:60]}...")
-            return description
+            if self.provider == "gemini":
+                return self._describe_image_gemini(image_base64, prompt_text)
+            elif self.provider in ("openai", "deepseek"):
+                return self._describe_image_openai(image_base64, prompt_text)
+            elif self.provider == "claude":
+                return self._describe_image_claude(image_base64, prompt_text)
+            else:
+                return "（当前模型不支持图片描述）"
         except Exception as e:
             print(f"[图片描述✗] {e}")
             return "（图片内容无法解析）"
+
+    def _describe_image_gemini(self, image_base64: str, prompt: str) -> str:
+        url = self.PROVIDER_URLS["gemini"].format(model=self.model)
+        url += f"?key={self.api_key}"
+
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"inline_data": {"mime_type": "image/jpeg", "data": image_base64}},
+                    {"text": prompt},
+                ]
+            }],
+            "generationConfig": {"maxOutputTokens": 200, "temperature": 0.2}
+        }
+        resp = requests.post(url, json=payload, timeout=30)
+        resp.raise_for_status()
+        desc = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        print(f"[图片描述] {desc[:60]}...")
+        return desc
+
+    def _describe_image_openai(self, image_base64: str, prompt: str) -> str:
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type":  "application/json"
+        }
+        payload = {
+            "model": self.model,
+            "messages": [{
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
+                    {"type": "text", "text": prompt},
+                ]
+            }],
+            "max_tokens": 200,
+            "temperature": 0.2,
+        }
+        resp = requests.post(self.PROVIDER_URLS[self.provider], headers=headers, json=payload, timeout=30)
+        resp.raise_for_status()
+        desc = resp.json()["choices"][0]["message"]["content"].strip()
+        print(f"[图片描述] {desc[:60]}...")
+        return desc
+
+    def _describe_image_claude(self, image_base64: str, prompt: str) -> str:
+        headers = {
+            "x-api-key":         self.api_key,
+            "anthropic-version": "2023-06-01",
+            "Content-Type":      "application/json"
+        }
+        payload = {
+            "model": self.model,
+            "max_tokens": 200,
+            "messages": [{
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": image_base64}},
+                    {"type": "text", "text": prompt},
+                ]
+            }]
+        }
+        resp = requests.post(self.PROVIDER_URLS["claude"], headers=headers, json=payload, timeout=30)
+        resp.raise_for_status()
+        desc = resp.json()["content"][0]["text"].strip()
+        print(f"[图片描述] {desc[:60]}...")
+        return desc

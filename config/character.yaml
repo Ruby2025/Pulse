@@ -6,8 +6,8 @@
 
 character:
   name: "你的角色名"            # 必填
-  age: 25
-  gender: "女"
+  age: 30
+  gender: "待填写"
 
   # ── 核心人格（必填，越详细越好，建议200字以上）──
   # 这段文字决定了角色在所有场景下的表现
@@ -57,14 +57,20 @@ user:
 # ── LLM 设置 ──
 llm:
   chat_model:
-    provider: "deepseek"        # deepseek / openai / claude / gemini
-    model: "deepseek-chat"
-    api_key: "env:LLM_API_KEY"  # 从 .env 读取，不要直接写 key
-
-  background_model:               # 后台任务用的模型（记忆压缩等）
     provider: "deepseek"
     model: "deepseek-chat"
     api_key: "env:LLM_API_KEY"
+    supports_vision: false        # true = 模型自带看图能力（GPT-4o/Claude/Gemini）
+
+  background_model:
+    provider: "deepseek"
+    model: "deepseek-chat"
+    api_key: "env:LLM_API_KEY"
+
+  vision_model:                   # 仅 supports_vision: false 时需要
+    provider: "gemini"
+    model: "gemini-2.5-flash-lite"
+    api_key: "env:GOOGLE_API_KEY"
 
 # ── 连接器 ──
 connector:

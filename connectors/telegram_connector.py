@@ -145,6 +145,25 @@ class TelegramConnector:
             "搬家", "生病", "发烧", "哭了", "崩溃"
         ])
 
+        # 视觉能力检测
+        llm_cfg = config.get("llm", {})
+        self._supports_vision = llm_cfg.get("chat_model", {}).get("supports_vision", False)
+        self._vision_llm = None
+        if not self._supports_vision:
+            vision_cfg = llm_cfg.get("vision_model", {})
+            if vision_cfg.get("provider"):
+                from core.llm_client import LLMClient
+                self._vision_llm = LLMClient(
+                    provider=vision_cfg.get("provider", "gemini"),
+                    model=vision_cfg.get("model", "gemini-2.5-flash-lite"),
+                    api_key=vision_cfg.get("api_key", "env:GOOGLE_API_KEY"),
+                )
+                print(f"[视觉] 使用独立视觉模型: {vision_cfg.get('provider')}/{vision_cfg.get('model')}")
+            else:
+                print("[视觉] 未配置 vision_model 且 chat_model 不支持视觉，图片将无法识别")
+        else:
+            print(f"[视觉] chat_model 自带视觉能力，图片直接发送")
+
     # ── 配置快捷访问 ─────────────────────────────────────────────────────
     @property
     def _bcfg(self) -> dict:
@@ -488,14 +507,21 @@ class TelegramConnector:
         # 图片处理
         image_base64, image_caption = self._get_image_from_message(message)
         if image_base64:
-            description = self.bot.chat_llm.describe_image(image_base64, image_caption)
-            if text:
-                text = f"{text}\n[图片内容：{description}]"
-            elif image_caption:
-                text = f"{image_caption}\n[图片内容：{description}]"
+            if self._supports_vision:
+                # chat_model 自带视觉：图片直接传给 bot.reply()
+                print(f"[图片] 直接发送给 chat_model（支持视觉）")
             else:
-                text = f"[图片内容：{description}]"
-            print(f"[图片] 已转换为文字描述")
+                # chat_model 不支持视觉：用 vision_model 先描述
+                vision = self._vision_llm or self.bot.chat_llm
+                description = vision.describe_image(image_base64, image_caption)
+                if text:
+                    text = f"{text}\n[图片内容：{description}]"
+                elif image_caption:
+                    text = f"{image_caption}\n[图片内容：{description}]"
+                else:
+                    text = f"[图片内容：{description}]"
+                image_base64 = None  # 已转为文字，不再传图片给 bot
+                print(f"[图片] 已通过 vision_model 转换为文字描述")
 
         if not text:
             return
